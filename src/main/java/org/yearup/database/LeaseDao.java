@@ -1,4 +1,5 @@
 package org.yearup.database;
 
-public interface LeaseDao {
+public interface LeaseDao
+{
 }
