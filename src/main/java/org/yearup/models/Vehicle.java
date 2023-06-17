@@ -8,6 +8,7 @@ public class Vehicle
     private String make;
     private String model;
     private String color;
+    private String type;
     private int year;
     private int miles;
     private BigDecimal price;
@@ -51,6 +52,16 @@ public class Vehicle
     public void setColor(String color)
     {
         this.color = color;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
     }
 
     public int getYear()
