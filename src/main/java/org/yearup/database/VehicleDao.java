@@ -19,7 +19,7 @@ public interface VehicleDao
     List<Vehicle> listByMileageRange(int minMiles, int maxMiles);
     List<Vehicle> listByType(String type);
 
-    Vehicle create(Vehicle vehicle);
+    Vehicle create(Vehicle vehicle, int dealershipId);
     void update(String vin, Vehicle vehicle);
     void delete(String vin);
 }
