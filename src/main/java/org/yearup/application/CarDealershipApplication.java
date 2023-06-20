@@ -1,6 +1,8 @@
 package org.yearup.application;
 
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.yearup.database.DealershipDao;
+import org.yearup.database.MySqlDealershipDao;
 import org.yearup.ui.UserInterface;
 import org.yearup.database.MySqlVehicleDao;
 import org.yearup.database.VehicleDao;
@@ -21,8 +23,9 @@ public class CarDealershipApplication
         }};
 
         VehicleDao vehicleDao = new MySqlVehicleDao(dataSource);
+        DealershipDao dealershipDao = new MySqlDealershipDao(dataSource);
 
-        UserInterface app = new UserInterface();
+        UserInterface app = new UserInterface(vehicleDao, dealershipDao);
         app.run();
     }
 }

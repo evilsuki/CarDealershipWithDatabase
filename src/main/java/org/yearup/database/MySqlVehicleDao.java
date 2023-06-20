@@ -19,6 +19,38 @@ public class MySqlVehicleDao implements VehicleDao
     }
 
     @Override
+    public Vehicle getByVin(String vin)
+    {
+        String sql = """
+                SELECT *
+                FROM vehicles
+                WHERE vin = ?;
+                """;
+
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql)
+        )
+        {
+            statement.setString(1, vin);
+
+            ResultSet row = statement.executeQuery();
+
+            // use IF when you expect only a single row
+            if (row.next())
+            {
+                return mapRow(row);
+            }
+
+        }
+        catch (SQLException e)
+        {
+            Logger.logError(e);
+        }
+
+        return null;
+    }
+
+    @Override
     public List<Vehicle> listByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, int dealershipId)
     {
         List<Vehicle> vehicles = new ArrayList<>();
@@ -336,7 +368,7 @@ public class MySqlVehicleDao implements VehicleDao
             BigDecimal price = row.getBigDecimal("price");
             boolean isSold = row.getBoolean("sold");
 
-            Vehicle vehicle = new Vehicle()
+            return new Vehicle()
             {{
                 setVin(vin);
                 setMake(make);
@@ -348,8 +380,6 @@ public class MySqlVehicleDao implements VehicleDao
                 setPrice(price);
                 setSold(isSold);
             }};
-
-            return vehicle;
         }
         catch (SQLException ex)
         {

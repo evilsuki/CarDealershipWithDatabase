@@ -1,21 +1,11 @@
 package org.yearup.models;
 
-import java.util.List;
-
 public class Dealership
 {
     private int dealershipId;
     private String name;
     private String address;
     private String phone;
-    private final List<Vehicle> vehicles;
-
-
-    public Dealership(int dealershipId, List<Vehicle> vehicles)
-    {
-        this.dealershipId = dealershipId;
-        this.vehicles = vehicles;
-    }
 
 
     public int getDealershipId()
@@ -57,6 +47,4 @@ public class Dealership
     {
         this.phone = phone;
     }
-
-
 }
