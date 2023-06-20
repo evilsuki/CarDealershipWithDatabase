@@ -1,7 +1,10 @@
 package org.yearup.ui;
 
+import org.yearup.models.Dealership;
+import org.yearup.models.Vehicle;
 import org.yearup.utilities.Logger;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UserInterface
@@ -69,7 +72,7 @@ public class UserInterface
     {
         System.out.println();
         System.out.println("Menu");
-        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------");
         System.out.println();
         System.out.println("What do you want to do?");
         System.out.println("\t 1) Search by price range");
@@ -124,5 +127,25 @@ public class UserInterface
 
     private void processGetByPrice()
     {
+    }
+
+    private void displaySearchResults(ArrayList<Vehicle> results)
+    {
+        System.out.printf("%-9s %-8s %-11s %-11s %-10s %-10s %-13s %s \n", "VIN", "Make", "Model", "Color", "Type", "Year", "Odometer", "Price");
+        System.out.println("---------------------------------------------------------------------------------------------------------------------------------------");
+
+        if(results.size() == 0)
+        {
+            System.out.println("No search results.");
+            return;
+        }
+
+        for(Vehicle vehicle: results)
+        {
+            System.out.printf("%-9s %-8s %-11s %-11s %-10s %-10d %-13d $ %.2f \n", vehicle.getVin(), vehicle.getMake(), vehicle.getModel(), vehicle.getColor(), vehicle.getType(), vehicle.getYear(), vehicle.getMiles(), vehicle.getPrice());
+        }
+
+        System.out.println("=======================================================================================================================================");
+        System.out.println();
     }
 }

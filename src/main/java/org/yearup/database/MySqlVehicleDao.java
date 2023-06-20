@@ -19,17 +19,18 @@ public class MySqlVehicleDao implements VehicleDao
     }
 
     @Override
-    public List<Vehicle> listByPriceRange(BigDecimal minPrice, BigDecimal maxPrice)
+    public List<Vehicle> listByPriceRange(BigDecimal minPrice, BigDecimal maxPrice, int dealershipId)
     {
         List<Vehicle> vehicles = new ArrayList<>();
 
-        String sql = "CALL VehicleByPriceRange(?, ?);";
+        String sql = "CALL VehicleByPriceRange(?, ?, ?);";
 
         try (Connection connection = dataSource.getConnection();
              CallableStatement statement = connection.prepareCall(sql))
         {
             statement.setBigDecimal(1, minPrice);
             statement.setBigDecimal(2, maxPrice);
+            statement.setInt(3, dealershipId);
 
             ResultSet row = statement.executeQuery();
 
@@ -49,23 +50,26 @@ public class MySqlVehicleDao implements VehicleDao
 
 
     @Override
-    public List<Vehicle> listAllVehicle()
+    public List<Vehicle> listAllVehicle(int dealershipId)
     {
         List<Vehicle> vehicles = new ArrayList<>();
 
         String sql = """
                 SELECT v.*
-                     , d.name
                 FROM vehicles AS v
-                	, dealerships AS d
-                    , inventory AS i
-                WHERE i.vin = v.vin
-                	AND i.dealership_id = d.dealership_id;
+                JOIN inventory AS i
+                	ON i.vin = v.vin
+                JOIN dealerships AS d
+                	ON i.dealership_id = d.dealership_id
+                WHERE d.dealership_id = ?
+                	AND v.sold = 0;
                 """;
 
         try (Connection connection = dataSource.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql))
         {
+            statement.setInt(1, dealershipId);
+
             ResultSet row = statement.executeQuery();
 
             while (row.next())
@@ -83,41 +87,149 @@ public class MySqlVehicleDao implements VehicleDao
     }
 
     @Override
-    public List<Vehicle> listByMakeModel(String make, String model)
+    public List<Vehicle> listByMakeModel(String make, String model, int dealershipId)
     {
         List<Vehicle> vehicles = new ArrayList<>();
+
+        String sql = "CALL VehicleByMakeModel(?, ?, ?);";
+
+        try (Connection connection = dataSource.getConnection();
+             CallableStatement statement = connection.prepareCall(sql))
+        {
+            statement.setString(1, make);
+            statement.setString(2, model);
+            statement.setInt(3, dealershipId);
+
+            ResultSet row = statement.executeQuery();
+
+            while (row.next())
+            {
+                Vehicle vehicle = mapRow(row);
+                vehicles.add(vehicle);
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.logError(ex);
+        }
 
         return vehicles;
     }
 
     @Override
-    public List<Vehicle> listByYearRange(int minYear, int maxYear)
+    public List<Vehicle> listByYearRange(int minYear, int maxYear, int dealershipId)
     {
         List<Vehicle> vehicles = new ArrayList<>();
+
+        String sql = "CALL VehicleByYearRange(?, ?, ?);";
+
+        try (Connection connection = dataSource.getConnection();
+             CallableStatement statement = connection.prepareCall(sql))
+        {
+            statement.setInt(1, minYear);
+            statement.setInt(2, maxYear);
+            statement.setInt(3, dealershipId);
+
+            ResultSet row = statement.executeQuery();
+
+            while (row.next())
+            {
+                Vehicle vehicle = mapRow(row);
+                vehicles.add(vehicle);
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.logError(ex);
+        }
 
         return vehicles;
     }
 
     @Override
-    public List<Vehicle> listByColor(String color)
+    public List<Vehicle> listByColor(String color, int dealershipId)
     {
         List<Vehicle> vehicles = new ArrayList<>();
+
+        String sql = "CALL VehicleByColor(?, ?);";
+
+        try (Connection connection = dataSource.getConnection();
+             CallableStatement statement = connection.prepareCall(sql))
+        {
+            statement.setString(1, color);
+            statement.setInt(2, dealershipId);
+
+            ResultSet row = statement.executeQuery();
+
+            while (row.next())
+            {
+                Vehicle vehicle = mapRow(row);
+                vehicles.add(vehicle);
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.logError(ex);
+        }
 
         return vehicles;
     }
 
     @Override
-    public List<Vehicle> listByMileageRange(int minMiles, int maxMiles)
+    public List<Vehicle> listByMileageRange(int minMiles, int maxMiles, int dealershipId)
     {
         List<Vehicle> vehicles = new ArrayList<>();
+
+        String sql = "CALL VehicleByMileRange(?, ?, ?);";
+
+        try (Connection connection = dataSource.getConnection();
+             CallableStatement statement = connection.prepareCall(sql))
+        {
+            statement.setInt(1, minMiles);
+            statement.setInt(2, maxMiles);
+            statement.setInt(3, dealershipId);
+
+            ResultSet row = statement.executeQuery();
+
+            while (row.next())
+            {
+                Vehicle vehicle = mapRow(row);
+                vehicles.add(vehicle);
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.logError(ex);
+        }
 
         return vehicles;
     }
 
     @Override
-    public List<Vehicle> listByType(String type)
+    public List<Vehicle> listByType(String type, int dealershipId)
     {
         List<Vehicle> vehicles = new ArrayList<>();
+
+        String sql = "CALL VehicleByType(?, ?);";
+
+        try (Connection connection = dataSource.getConnection();
+             CallableStatement statement = connection.prepareCall(sql))
+        {
+            statement.setString(1, type);
+            statement.setInt(2, dealershipId);
+
+            ResultSet row = statement.executeQuery();
+
+            while (row.next())
+            {
+                Vehicle vehicle = mapRow(row);
+                vehicles.add(vehicle);
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.logError(ex);
+        }
 
         return vehicles;
     }
