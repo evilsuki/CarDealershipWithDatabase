@@ -65,6 +65,7 @@ public class SalesContract
 
     public BigDecimal getRecordingFee()
     {
+        recordingFee = BigDecimal.valueOf(100);
         return recordingFee;
     }
 
@@ -75,6 +76,19 @@ public class SalesContract
 
     public BigDecimal getProcessingFee()
     {
+        BigDecimal threshold = new BigDecimal("10000");
+        BigDecimal lowerProcessingFee = new BigDecimal("295");
+        BigDecimal higherProcessingFee = new BigDecimal("495");
+
+        if (salesPrice.compareTo(threshold) < 0)
+        {
+            processingFee = lowerProcessingFee;
+        }
+        else
+        {
+            processingFee = higherProcessingFee;
+        }
+
         return processingFee;
     }
 
@@ -85,6 +99,7 @@ public class SalesContract
 
     public BigDecimal getSalesTax()
     {
+        salesTax = salesPrice.multiply(BigDecimal.valueOf(0.08));
         return salesTax;
     }
 

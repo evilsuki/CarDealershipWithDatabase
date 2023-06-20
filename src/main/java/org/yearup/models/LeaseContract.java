@@ -66,6 +66,7 @@ public class LeaseContract
 
     public BigDecimal getEndingValue()
     {
+        endingValue = salesPrice.divide(BigDecimal.valueOf(2));
         return endingValue;
     }
 
@@ -76,6 +77,7 @@ public class LeaseContract
 
     public BigDecimal getLeaseFee()
     {
+        leaseFee = BigDecimal.valueOf(295);
         return leaseFee;
     }
 
@@ -86,6 +88,7 @@ public class LeaseContract
 
     public BigDecimal getSalesTax()
     {
+        salesTax = salesPrice.multiply(BigDecimal.valueOf(0.08));
         return salesTax;
     }
 

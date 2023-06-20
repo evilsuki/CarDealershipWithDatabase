@@ -127,18 +127,12 @@ public class UserInterface
         {
             if (contractType.equalsIgnoreCase("sale"))
             {
-                BigDecimal salePrice = getUserInputBigDecimal("Enter sale price:");
-                BigDecimal processFee = getUserInputBigDecimal("Enter processing fee:");
-                BigDecimal saleTax = getUserInputBigDecimal("Enter sale tax:");
-
                 SalesContract salesContract = new SalesContract()
                 {{
                     setVin(vin);
                     setCustomerName(customerName);
                     setCustomerEmail(customerEmail);
-                    setSalesPrice(salePrice);
-                    setProcessingFee(processFee);
-                    setSalesTax(saleTax);
+                    setSalesPrice(vehicle.getPrice());
                 }};
 
                 salesDao.create(salesContract);
@@ -146,27 +140,23 @@ public class UserInterface
                 vehicle.setSold(true);
                 vehicleDao.update(vin, vehicle);
 
+                System.out.println();
                 System.out.println("Completed Sale Contract.");
 
             }
             else if (contractType.equalsIgnoreCase("lease"))
             {
-                BigDecimal salePrice = getUserInputBigDecimal("Enter sale price:");
-                BigDecimal endValue = getUserInputBigDecimal("Enter ending value:");
-                BigDecimal saleTax = getUserInputBigDecimal("Enter sale tax:");
-
                 LeaseContract leaseContract = new LeaseContract()
                 {{
                     setVin(vin);
                     setCustomerName(customerName);
                     setCustomerEmail(customerEmail);
-                    setSalesPrice(salePrice);
-                    setEndingValue(endValue);
-                    setSalesTax(saleTax);
+                    setSalesPrice(vehicle.getPrice());
                 }};
 
                 leaseDao.create(leaseContract);
 
+                System.out.println();
                 System.out.println("Completed Lease Contract.");
 
             }
