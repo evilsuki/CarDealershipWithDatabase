@@ -1,9 +1,8 @@
 package org.yearup.database;
 
-import org.yearup.models.Vehicle;
+import org.yearup.models.SalesContract;
 
 public interface SalesDao
 {
-    Vehicle create(Vehicle vehicle);
-    void update(int salesId, Vehicle vehicle);
+    SalesContract create(SalesContract salesContract);
 }

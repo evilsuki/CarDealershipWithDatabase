@@ -144,3 +144,334 @@ VALUES  ('WAUFFAFL4BN123457', 'Lisa Anderson', 'lisaanderson@example.com', 16000
 		('1HGCM82635A123458', 'Daniel Johnson', 'danieljohnson@example.com', 13000.00, 6500.00, 1040.00),
 		('5XYZU3LB9DG025876', 'Jennifer Thompson', 'jenniferthompson@example.com', 12000.00, 6000.00, 960.00);
 
+
+-- CREATE PROCEDURES
+
+DELIMITER //
+CREATE PROCEDURE VehicleByPriceRange
+(
+	IN min_price DECIMAL(10,2),
+	IN max_price DECIMAL(10,2),
+    IN dealership_id INT
+)
+BEGIN
+	IF min_price IS NOT NULL AND max_price IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE price BETWEEN min_price AND max_price
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY price;
+	ELSEIF min_price IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE price >= min_price
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY price;
+	ELSEIF max_price IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE price <= max_price
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY price;
+	ELSE
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE v.sold = 0
+			AND d.dealership_id = dealership_id
+		ORDER BY price;
+	END IF;
+END //
+DELIMITER;
+
+
+
+
+DELIMITER //
+CREATE PROCEDURE VehicleByMakeModel
+(
+	IN make_param VARCHAR(50),
+	IN model_param VARCHAR(50),
+    IN dealership_id INT
+)
+BEGIN
+    IF make_param IS NOT NULL AND model_param IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE make = make_param
+			AND model = model_param
+            AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY make;
+	ELSEIF make_param IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE make = make_param
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY make;
+	ELSEIF model_param IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE model = model_param
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY make;
+	ELSE
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE v.sold = 0
+			AND d.dealership_id = dealership_id
+		ORDER BY make;
+    END IF;
+END //
+DELIMITER;
+
+
+
+DELIMITER //
+CREATE PROCEDURE VehicleByYearRange
+(
+	IN min_year INT,
+	IN max_year INT,
+    IN dealership_id INT
+)
+BEGIN
+	IF min_year IS NOT NULL AND max_year IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE year BETWEEN min_year AND max_year
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY year;
+	ELSEIF min_year IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE year >= min_year
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY year;
+	ELSEIF max_year IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE year <= max_year
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY year;
+	ELSE
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE v.sold = 0
+			AND d.dealership_id = dealership_id
+		ORDER BY year;
+	END IF;
+END //
+DELIMITER;
+
+
+
+
+DELIMITER //
+CREATE PROCEDURE VehicleByColor
+(
+    IN color_param VARCHAR(20),
+    IN dealership_id INT
+)
+BEGIN
+    SELECT v.*
+	FROM vehicles AS v
+	JOIN inventory AS i
+		ON i.vin = v.vin
+	JOIN dealerships AS d
+		ON i.dealership_id = d.dealership_id
+	WHERE color = color_param
+		AND v.sold = 0
+        AND d.dealership_id = dealership_id;
+END //
+DELIMITER ;
+
+
+
+DELIMITER //
+CREATE PROCEDURE VehicleByMileRange
+(
+    IN min_miles INT,
+    IN max_miles INT,
+    IN dealership_id INT
+)
+BEGIN
+    IF min_miles IS NOT NULL AND max_miles IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE miles BETWEEN min_miles AND max_miles
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY miles;
+	ELSEIF min_miles IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE year >= min_miles
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY miles;
+	ELSEIF max_miles IS NOT NULL THEN
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE year <= max_miles
+			AND v.sold = 0
+            AND d.dealership_id = dealership_id
+		ORDER BY miles;
+	ELSE
+		SELECT v.*
+		FROM vehicles AS v
+		JOIN inventory AS i
+			ON i.vin = v.vin
+		JOIN dealerships AS d
+			ON i.dealership_id = d.dealership_id
+		WHERE v.sold = 0
+			AND d.dealership_id = dealership_id
+		ORDER BY miles;
+	END IF;
+END //
+DELIMITER ;
+
+
+
+DELIMITER //
+CREATE PROCEDURE VehicleByType
+(
+    IN type_param VARCHAR(20),
+    IN dealership_id INT
+)
+BEGIN
+    SELECT v.*
+	FROM vehicles AS v
+	JOIN inventory AS i
+		ON i.vin = v.vin
+	JOIN dealerships AS d
+		ON i.dealership_id = d.dealership_id
+    WHERE type = type_param
+		AND d.dealership_id = dealership_id
+		AND v.sold = 0;
+END //
+DELIMITER ; 
+
+
+
+DELIMITER //
+CREATE PROCEDURE VehiclesInsert
+(
+    IN vin_param VARCHAR(20),
+    IN make_param VARCHAR(50),
+    IN model_param VARCHAR(50),
+    IN color_param VARCHAR(20),
+    IN type_param VARCHAR(20),
+    IN year_param INT,
+    IN miles_param INT,
+    IN price_param DECIMAL(10, 2),
+    IN sold_param BOOL,
+    IN dealership_id_param INT
+)
+BEGIN
+    INSERT INTO vehicles (vin, make, model, color, type, year, miles, price, sold)
+    VALUES (vin_param, make_param, model_param, color_param, type_param, year_param, miles_param, price_param, sold_param);
+
+    INSERT INTO inventory (dealership_id, vin)
+    VALUES (dealership_id_param, vin_param);
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE PROCEDURE AddLeaseContract(
+    IN p_vin VARCHAR(20),
+    IN p_customer_name VARCHAR(50),
+    IN p_customer_email VARCHAR(50),
+    IN p_sales_price DECIMAL(10, 2),
+    IN p_ending_value DECIMAL(10, 2),
+    IN p_sales_tax DECIMAL(10, 2)
+)
+BEGIN
+    INSERT INTO lease_contracts (vin, customer_name, customer_email, sales_price, ending_value, sales_tax)
+    VALUES (p_vin, p_customer_name, p_customer_email, p_sales_price, p_ending_value, p_sales_tax);
+END //
+DELIMITER ;
+
+
+
+DELIMITER //
+CREATE PROCEDURE AddSalesContract(
+    IN p_vin VARCHAR(20),
+    IN p_customer_name VARCHAR(50),
+    IN p_customer_email VARCHAR(50),
+    IN p_sales_price DECIMAL(10, 2),
+    IN p_processing_fee DECIMAL(10, 2),
+    IN p_sales_tax DECIMAL(10, 2)
+)
+BEGIN
+    INSERT INTO sales_contracts (vin, customer_name, customer_email, sales_price, processing_fee, sales_tax)
+    VALUES (p_vin, p_customer_name, p_customer_email, p_sales_price, p_processing_fee, p_sales_tax);
+END //
+DELIMITER ;

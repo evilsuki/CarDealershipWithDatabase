@@ -1,13 +1,13 @@
 package org.yearup.ui;
 
-import org.yearup.database.DealershipDao;
-import org.yearup.database.VehicleDao;
+import org.yearup.database.*;
 import org.yearup.models.Dealership;
+import org.yearup.models.LeaseContract;
+import org.yearup.models.SalesContract;
 import org.yearup.models.Vehicle;
 import org.yearup.utilities.Logger;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -16,11 +16,15 @@ public class UserInterface
     private final Scanner sc = new Scanner(System.in);
     private final VehicleDao vehicleDao;
     private final DealershipDao dealershipDao;
+    private final SalesDao salesDao;
+    private final LeaseDao leaseDao;
 
-    public UserInterface(VehicleDao vehicleDao, DealershipDao dealershipDao)
+    public UserInterface(VehicleDao vehicleDao, DealershipDao dealershipDao, SalesDao salesDao, LeaseDao leaseDao)
     {
         this.vehicleDao = vehicleDao;
         this.dealershipDao = dealershipDao;
+        this.salesDao = salesDao;
+        this.leaseDao = leaseDao;
     }
 
 
@@ -94,7 +98,7 @@ public class UserInterface
         System.out.println("\t 3) Search by year range");
         System.out.println("\t 4) Search by color");
         System.out.println("\t 5) Search by mileage range");
-        System.out.println("\t 6) Search by type (sedan, truck , SUV, coupe)");
+        System.out.println("\t 6) Search by type (sedan, truck , SUV)");
         System.out.println("\t 7) List all vehicles");
         System.out.println("\t 8) Add vehicle");
         System.out.println("\t 9) Remove vehicle");
@@ -105,6 +109,73 @@ public class UserInterface
 
     private void processSaleOrLeaseVehicle()
     {
+        System.out.println("Sale or Lease Vehicle");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------");
+        System.out.println();
+
+        String contractType = getUserInputString("Enter the contract type (Sale or Lease):");
+        String customerName = getUserInputString("Enter customer name:");
+        String customerEmail = getUserInputString("Enter customer email:");
+        String vin = getUserInputString("Enter the VIN of vehicle:");
+
+        Vehicle vehicle = vehicleDao.getByVin(vin);
+        if (vehicle == null)
+        {
+            System.out.printf("Vehicle with VIN %s was not found. \n", vin);
+        }
+        else
+        {
+            if (contractType.equalsIgnoreCase("sale"))
+            {
+                BigDecimal salePrice = getUserInputBigDecimal("Enter sale price:");
+                BigDecimal processFee = getUserInputBigDecimal("Enter processing fee:");
+                BigDecimal saleTax = getUserInputBigDecimal("Enter sale tax:");
+
+                SalesContract salesContract = new SalesContract()
+                {{
+                    setVin(vin);
+                    setCustomerName(customerName);
+                    setCustomerEmail(customerEmail);
+                    setSalesPrice(salePrice);
+                    setProcessingFee(processFee);
+                    setSalesTax(saleTax);
+                }};
+
+                salesDao.create(salesContract);
+
+                vehicle.setSold(true);
+                vehicleDao.update(vin, vehicle);
+
+                System.out.println("Completed Sale Contract.");
+
+            }
+            else if (contractType.equalsIgnoreCase("lease"))
+            {
+                BigDecimal salePrice = getUserInputBigDecimal("Enter sale price:");
+                BigDecimal endValue = getUserInputBigDecimal("Enter ending value:");
+                BigDecimal saleTax = getUserInputBigDecimal("Enter sale tax:");
+
+                LeaseContract leaseContract = new LeaseContract()
+                {{
+                    setVin(vin);
+                    setCustomerName(customerName);
+                    setCustomerEmail(customerEmail);
+                    setSalesPrice(salePrice);
+                    setEndingValue(endValue);
+                    setSalesTax(saleTax);
+                }};
+
+                leaseDao.create(leaseContract);
+
+                System.out.println("Completed Lease Contract.");
+
+            }
+            else
+            {
+                System.out.println("Invalid contract type.");
+                displayHomeScreen();
+            }
+        }
     }
 
     private void processDeleteVehicle()
@@ -114,18 +185,27 @@ public class UserInterface
         System.out.println();
 
         String vin = getUserInputString("Enter vin of the car to remove: ");
+        System.out.println();
 
         Vehicle vehicle = vehicleDao.getByVin(vin);
 
         printVehicle(vehicle);
         System.out.println();
         String answer = getUserInputString("Are you sure? (y/n):");
+        System.out.println();
 
         if(answer.equalsIgnoreCase("y"))
         {
-            vehicleDao.delete(vin);
+            try
+            {
+                vehicleDao.delete(vin);
 
-            System.out.printf("Vehicle %s was successfully removed.\n", vin);
+                System.out.printf("Vehicle %s was successfully removed.\n", vin);
+            }
+            catch (Exception e)
+            {
+                Logger.logError(e);
+            }
         }
     }
 
@@ -187,13 +267,14 @@ public class UserInterface
 
         int dealershipId = getUserInputInt("Enter ID for Dealership you want:");
         String type = getUserInputString("Enter the vehicle type: ");
+        System.out.println();
 
         // get all cars from the dealership
         List<Vehicle> results = vehicleDao.listByType(type, dealershipId);
 
         // display the vehicles
         System.out.println("Search by Vehicle Type: " + type);
-        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------");
 
         displaySearchResults(results);
     }
@@ -205,13 +286,14 @@ public class UserInterface
         int dealershipId = getUserInputInt("Enter ID for Dealership you want:");
         int min = getUserInputInt("Enter the lowest mileage:");
         int max = getUserInputInt("Enter the highest mileage:");
+        System.out.println();
 
         // get all cars from the dealership
         List<Vehicle> results = vehicleDao.listByMileageRange(min, max, dealershipId);
 
         // display the vehicles
         System.out.println("Search by Mileage: " + min + " - " + max);
-        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------");
 
         displaySearchResults(results);
     }
@@ -222,13 +304,14 @@ public class UserInterface
 
         int dealershipId = getUserInputInt("Enter ID for Dealership you want:");
         String color = getUserInputString("Enter the color:");
+        System.out.println();
 
         // get all cars from the dealership
         List<Vehicle> results = vehicleDao.listByColor(color, dealershipId);
 
         // display the vehicles
         System.out.println("Search by Color: " + color);
-        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------");
 
         displaySearchResults(results);
     }
@@ -240,13 +323,14 @@ public class UserInterface
         int dealershipId = getUserInputInt("Enter ID for Dealership you want:");
         int min = getUserInputInt("Enter the lowest year:");
         int max = getUserInputInt("Enter the highest year:");
+        System.out.println();
 
         // get all cars from the dealership
         List<Vehicle> results = vehicleDao.listByYearRange(min, max, dealershipId);
 
         // display the vehicles
         System.out.println("Search by Year: " + min + " - " + max);
-        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------");
 
         displaySearchResults(results);
     }
@@ -258,13 +342,14 @@ public class UserInterface
         int dealershipId = getUserInputInt("Enter ID for Dealership you want:");
         String make = getUserInputString("Enter the make:");
         String model = getUserInputString("Enter the model:");
+        System.out.println();
 
         // get all cars from the dealership
         List<Vehicle> results = vehicleDao.listByMakeModel(make, model, dealershipId);
 
         // display the vehicles
         System.out.println("Search by Make / Model: " + make + " / " + model);
-        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------");
 
         displaySearchResults(results);
     }
@@ -276,13 +361,14 @@ public class UserInterface
         int dealershipId = getUserInputInt("Enter ID for Dealership you want:");
         BigDecimal min = getUserInputBigDecimal("Enter the lowest price:");
         BigDecimal max = getUserInputBigDecimal("Enter the highest price:");
+        System.out.println();
 
         // get all cars from the dealership
         List<Vehicle> results = vehicleDao.listByPriceRange(min, max, dealershipId);
 
         // display the vehicles
         System.out.println("Search by Price: " + min + " - " + max);
-        System.out.println("-------------------------------------------------------------------------------------------");
+        System.out.println("----------------------------------------------------------------------------------------------------------------------------");
 
         displaySearchResults(results);
     }
@@ -295,6 +381,8 @@ public class UserInterface
         if(results.size() == 0)
         {
             System.out.println("No search results.");
+            System.out.println("============================================================================================================================");
+
             return;
         }
 

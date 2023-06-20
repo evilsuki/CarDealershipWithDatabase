@@ -335,18 +335,24 @@ public class MySqlVehicleDao implements VehicleDao
     @Override
     public void delete(String vin)
     {
-        String sql = """
+        String sql1 = """
+                DELETE FROM inventory
+                WHERE vin = ?;
+                """;
+        String sql2 = """
                 DELETE FROM vehicles
                 WHERE vin = ?;
                 """;
 
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql))
+             PreparedStatement statement1 = connection.prepareStatement(sql1);
+             PreparedStatement statement2 = connection.prepareStatement(sql2))
         {
-            statement.setString(1, vin);
+            statement1.setString(1, vin);
+            statement2.setString(1, vin);
 
-            statement.executeUpdate();
-
+            statement1.executeUpdate();
+            statement2.executeUpdate();
         }
         catch (SQLException ex)
         {
